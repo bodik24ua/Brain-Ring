@@ -54,7 +54,7 @@ function TimerControls({ gameState, publishGameState }) {
         <div>{quickSetTimes.map(time => (<button key={time} onClick={() => setDuration(time)} style={{ fontWeight: timerDuration === time ? 'bold' : 'normal', margin: '2px' }}>{time}s</button>))}</div>
         <div style={{ marginTop: '15px' }}>
           <span style={{ fontSize: '1.5em', marginRight: '20px' }}>{timerDuration} s</span>
-          <button onClick={toggleTimer} style={{ fontSize: '1.5em', padding: '10px 20px', backgroundColor: timerRunning ? '#ffcccc' : '#ccffcc' }}>{timerRunning ? 'СТОП' : 'СТАРТ'}</button>
+          <button onClick={toggleTimer} style={{ fontSize: '1.5em', padding: '10px 20px', backgroundColor: timerRunning ? '#9d5555ff' : '#24a745ff' }}>{timerRunning ? 'СТОП' : 'СТАРТ'}</button>
         </div>
         <div style={{ marginTop: '15px' }}>
           <h3>Хто натиснув:</h3>
@@ -170,18 +170,18 @@ function HostPage() {
         <Link to="/">&larr; На головну</Link>
         <div>
             <button onClick={() => setShowScanner(!showScanner)} style={{ marginRight: '10px' }}>{showScanner ? 'Закрити' : '📷 Підключити'}</button>
-            <button onClick={handleResetGame} style={{ backgroundColor: '#ffdddd', border: '1px solid red' }}>Скинути</button>
+            <button onClick={handleResetGame} style={{ backgroundColor: '#c16161ff', border: '1px solid red' }}>Скинути</button>
         </div>
       </nav>
       
       {showScanner && <div style={sectionStyle}><div id="host-qr-scanner" style={{ maxWidth: '300px', margin: 'auto' }}></div></div>}
 
       <h1>Сторінка Ведучого</h1>
-      <div style={{ padding: '10px', backgroundColor: '#dfffe2' }}>ID: {gameId}</div>
+      <div style={{ padding: '10px' }}>ID: {gameId}</div>
 
       <TimerControls gameState={gameState} publishGameState={publishGameState} />
 
-      <div style={{ padding: '10px', border: '2px solid blue', borderRadius: '8px', marginBottom: '20px', backgroundColor: '#f0f8ff' }}>
+      <div style={{ padding: '10px', border: '2px solid blue', borderRadius: '8px', marginBottom: '20px', backgroundColor: '#242424' }}>
           <h3>Вибране питання:</h3>
           {currentQuestionId ? (
               <p style={{ fontSize: '1.2em' }}>
@@ -223,7 +223,7 @@ function HostPage() {
                     <td>
                         <button onClick={() => setShowQrForTeam(team)} style={{ marginRight: '5px' }}>QR</button>
                         {/* Кнопка видалення */}
-                        <button onClick={() => handleDeleteTeam(team.id)} style={{ backgroundColor: '#ffdddd', color: 'red', border: '1px solid red' }}>X</button>
+                        <button onClick={() => handleDeleteTeam(team.id)} style={{ backgroundColor: '#fa6b6bff', color: 'red', border: '1px solid red' }}>X</button>
                     </td>
                   </tr>
                 );
@@ -239,7 +239,7 @@ function HostPage() {
           <input type="text" value={newQuestionText} onChange={(e) => setNewQuestionText(e.target.value)} style={{ width: '60%' }} />
           <button onClick={handleAddQuestion}>Додати</button>
           <button onClick={handleExportQuestions}>Експорт</button>
-          <label style={{ marginLeft: '5px', background:'#eee', padding:'2px' }}>Імпорт<input type="file" accept=".json" style={{display:'none'}} onChange={handleImportQuestions}/></label>
+          <button style={{ marginLeft: '5px'}}>Імпорт<input type="file" accept=".json" style={{display:'none'}} onChange={handleImportQuestions}/></button>
         </div>
         <ul style={{ maxHeight: '300px', overflowY: 'auto', marginTop: '10px', border: '1px solid #eee' }}>
           {questions.map((q, i) => {

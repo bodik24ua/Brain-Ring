@@ -9,13 +9,13 @@ function HomePage() {
       <nav>
         <ul>
           <li>
-            <Link to="/host">Я - Ведучий</Link>
+            <button style={{ margin: '10px'}}><Link to="/host">Ведучий</Link></button>
           </li>
           <li>
-            <Link to="/player">Я - Гравець</Link>
+            <button style={{ margin: '10px'}}><Link to="/player">Гравець</Link></button>
           </li>
           <li>
-            <Link to="/results">Перегляд результатів</Link>
+            <button style={{ margin: '10px'}}><Link to="/results">Перегляд результатів</Link></button>
           </li>
         </ul>
       </nav>

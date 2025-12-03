@@ -90,14 +90,14 @@ function ResultsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}><Link to="/">&larr; На головну</Link><button onClick={handleDisconnect}>Відключитися</button></div>
       <h1>Результати</h1>
       
-      <div style={{ margin: '20px auto', padding: '20px', maxWidth: '800px', border: '2px solid #333', borderRadius: '10px', backgroundColor: '#fff', fontSize: '1.5em', fontWeight: 'bold' }}>
-          {isQuestionActive && currentQuestionText ? <span>{currentQuestionText}</span> : <span style={{ color: '#ccc' }}>Увага на екран...</span>}
+      <div style={{ margin: '20px auto', padding: '20px', maxWidth: '800px', border: '2px solid #333', borderRadius: '10px', backgroundColor: '#1a1a1a', fontSize: '1.5em', fontWeight: 'bold' }}>
+          {isQuestionActive && currentQuestionText ? <span>{currentQuestionText}</span> : <span style={{ color: '#000000ff' }}>Увага на екран...</span>}
       </div>
 
       <LiveTimer timerDuration={timerDuration} timerStartTime={timerStartTime} timerRunning={timerRunning} hasBuzzed={false} buzzTime={0} />
       <hr />
       <table style={{ width: '100%', maxWidth: '900px', margin: 'auto', borderCollapse: 'collapse', fontSize: '1.4em' }}>
-        <thead><tr style={{ backgroundColor: '#ddd' }}><th>Ранг</th><th>Команда</th><th>Бали</th><th>Час</th></tr></thead>
+        <thead><tr style={{ backgroundColor: '#242424' }}><th>Ранг</th><th>Команда</th><th>Бали</th><th>Час</th></tr></thead>
         <tbody>
           {displayTeams.length === 0 ? (<tr><td colSpan="4">Очікування...</td></tr>) : (
             displayTeams.map((team) => {
@@ -108,7 +108,7 @@ function ResultsPage() {
               const medal = getRankIcon(team);
 
               return (
-                <tr key={team.id} style={{ backgroundColor: isSpeaker ? '#d1fae5' : 'transparent', transition: 'background-color 0.3s' }}>
+                <tr key={team.id} style={{ backgroundColor: isSpeaker ? '#27754dff' : 'transparent', transition: 'background-color 0.3s' }}>
                   <td style={{ border: '1px solid #ccc' }}>{medal}</td>
                   <td style={{ border: '1px solid #ccc', textAlign: 'left', padding: '10px' }}>{isSpeaker && <span style={{ marginRight: '10px' }}>🎤</span>} {team.name}</td>
                   <td style={{ border: '1px solid #ccc', fontWeight: 'bold' }}>{team.score}</td>

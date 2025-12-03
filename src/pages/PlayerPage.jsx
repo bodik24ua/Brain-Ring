@@ -31,7 +31,7 @@ function BuzzerButton({ gameState, teamId, publishAction }) {
       const remainingTime = timerDuration - elapsed;
       publishAction({ type: 'BUZZ', teamId: teamId, time: remainingTime });
     };
-    let buttonText = 'НАТИСНУТИ!'; if (!timerRunning) buttonText = 'Чекайте...'; if (hasBuzzed) buttonText = 'Натиснуто!';
+    let buttonText = 'PUSH!'; if (!timerRunning) buttonText = 'wait...'; if (hasBuzzed) buttonText = 'DONE!';
     return (
       <button onClick={handleBuzz} disabled={!isActive} style={{ width: '300px', height: '300px', borderRadius: '50%', fontSize: '2.5em', fontWeight: 'bold', color: 'white', backgroundColor: isActive ? '#ff0000' : '#888888', border: '10px solid #333' }}>{buttonText}</button>
     );
@@ -144,7 +144,7 @@ function PlayerPage() {
   if (scannedData && !scannedData.teamId) {
       return (
           <div style={{ padding: '20px', textAlign: 'center' }}>
-              <button onClick={handleExitGame} style={{ float: 'right', fontSize: '0.8em', background: '#ffdddd' }}>Вийти</button>
+              <button onClick={handleExitGame} style={{ float: 'right', fontSize: '0.8em', background: '#8a3c3cff' }}>Вийти</button>
               <h1>Ви у грі! (ID: {gameId})</h1>
               <h2>Оберіть свою команду:</h2>
               
@@ -156,7 +156,7 @@ function PlayerPage() {
                           <button 
                               key={team.id}
                               onClick={() => setScannedData({ ...scannedData, teamId: team.id })}
-                              style={{ padding: '15px', fontSize: '1.3em', backgroundColor: 'white', border: '2px solid #ccc', borderRadius: '8px', cursor: 'pointer' }}
+                              style={{ padding: '15px', fontSize: '1.3em', backgroundColor: '#1a1a1a', border: '2px solid #ccc', borderRadius: '8px', cursor: 'pointer' }}
                           >
                               {team.name}
                           </button>
@@ -204,13 +204,13 @@ function PlayerPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#f0f8ff', padding: '20px', minHeight: '100vh', textAlign: 'center' }}>
+    <div style={{padding: '20px', minHeight: '100vh', textAlign: 'center' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
          <h3>{myTeam.name}</h3>
-         <button onClick={handleExitGame} style={{ fontSize: '0.8em', background:'#ffdddd', border:'1px solid red', padding: '5px' }}>Вийти</button>
+         <button onClick={handleExitGame} style={{ fontSize: '0.8em', background:'#973030ff', border:'1px solid red', padding: '5px' }}>Вийти</button>
       </div>
 
-      <div style={{ minHeight: '60px', margin: '10px 0', padding: '10px', border: '1px solid #ccc', borderRadius: '8px', background: 'white' }}>
+      <div style={{ minHeight: '60px', margin: '10px 0', padding: '10px', border: '1px solid #ccc', borderRadius: '8px', background: '#1a1a1a' }}>
           {gameState.timerRunning && currentQuestionText ? <h3>{currentQuestionText}</h3> : <p style={{color:'#888'}}>Очікуйте на питання...</p>}
       </div>
       
@@ -220,7 +220,7 @@ function PlayerPage() {
       <hr style={{ margin: '30px 0' }} />
       
       <table style={{ width: '100%', maxWidth: '800px', margin: '0 auto', borderCollapse: 'collapse' }}>
-        <thead><tr style={{ backgroundColor: '#ddd' }}><th>Команда</th><th>Бали</th><th>Час</th></tr></thead>
+        <thead><tr style={{ backgroundColor: '#707070ff' }}><th>Команда</th><th>Бали</th><th>Час</th></tr></thead>
         <tbody>
           {teams.map((team) => {
             const buzzData = buzzers.find(b => b.teamId === team.id);
