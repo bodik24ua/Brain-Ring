@@ -128,7 +128,7 @@ function PlayerPage() {
             <div style={{ textAlign: 'center', border: '2px dashed #ccc', padding: '20px', margin: '20px' }}>
                 <h3>Покажіть це Ведучому</h3>
                 {setupInfo && (
-                    <QRCodeSVG value={JSON.stringify({ setupId: setupInfo.setupId })} size={256} />
+                    <QRCodeSVG style={{ padding: '15px', background: '#fff' }} value={JSON.stringify({ setupId: setupInfo.setupId })} size={256} />
                 )}
                 <br />
                 <button onClick={() => setShowMyQrMode(false)} style={{ marginTop: '20px' }}>Скасувати</button>
