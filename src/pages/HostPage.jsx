@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react'; // <-- Додано useRef
 import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
@@ -11,7 +11,6 @@ const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100%', h
 const modalContentStyle = { backgroundColor: 'white', padding: '30px', borderRadius: '8px', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.2)' };
 const sectionStyle = { border: '1px solid #ccc', borderRadius: '8px', padding: '15px', margin: '20px 0' };
 
-// Компонент модального вікна з QR-кодом команди
 function Modal({ team, gameId, onClose }) { 
     if (!team) return null; 
     const qrValue = JSON.stringify({ gameId, teamId: team.id }); 
@@ -27,7 +26,6 @@ function Modal({ team, gameId, onClose }) {
     ); 
 }
 
-// Компонент керування таймером
 function TimerControls({ gameState, publishGameState }) {
     const { timerDuration, timerRunning, buzzers } = gameState;
     const quickSetTimes = [15, 30, 45, 60, 90, 120, 300];
@@ -54,7 +52,7 @@ function TimerControls({ gameState, publishGameState }) {
         <div>{quickSetTimes.map(time => (<button key={time} onClick={() => setDuration(time)} style={{ fontWeight: timerDuration === time ? 'bold' : 'normal', margin: '2px' }}>{time}s</button>))}</div>
         <div style={{ marginTop: '15px' }}>
           <span style={{ fontSize: '1.5em', marginRight: '20px' }}>{timerDuration} s</span>
-          <button onClick={toggleTimer} style={{ fontSize: '1.5em', padding: '10px 20px', backgroundColor: timerRunning ? '#9d5555ff' : '#24a745ff' }}>{timerRunning ? 'СТОП' : 'СТАРТ'}</button>
+          <button onClick={toggleTimer} style={{ fontSize: '1.5em', padding: '10px 20px', backgroundColor: timerRunning ? '#ffcccc' : '#ccffcc' }}>{timerRunning ? 'СТОП' : 'СТАРТ'}</button>
         </div>
         <div style={{ marginTop: '15px' }}>
           <h3>Хто натиснув:</h3>
@@ -67,12 +65,16 @@ function TimerControls({ gameState, publishGameState }) {
 function HostPage() {
   const { gameState, gameId, isConnected, connectToGame, publishGameState, inviteDevice } = useGame();
   
+  // Захист від пустих даних
   const { teams, questions, buzzers, currentQuestionId, usedQuestionIds = [] } = gameState;
 
   const [newTeamName, setNewTeamName] = useState('');
   const [newQuestionText, setNewQuestionText] = useState(''); 
   const [showQrForTeam, setShowQrForTeam] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
+
+  // --- REF ДЛЯ ІМПОРТУ ---
+  const fileInputRef = useRef(null); 
 
   // Ініціалізація
   useEffect(() => {
@@ -98,37 +100,25 @@ function HostPage() {
     }
   }, [showScanner, inviteDevice]);
 
-  // --- Функції керування КОМАНДАМИ ---
+  // Керування командами
   const handleCreateTeam = () => { 
       if (newTeamName.trim() === '' || teams.length >= 6) return; 
       const newTeam = { id: generateId('team-'), name: newTeamName.trim(), score: 0 };
       publishGameState({ ...gameState, teams: [...teams, newTeam] }); 
       setNewTeamName(''); 
   };
-
-  // --- НОВА ФУНКЦІЯ: Видалити команду ---
   const handleDeleteTeam = (teamId) => {
-    if (!window.confirm('Ви впевнені, що хочете видалити цю команду?')) return;
-
-    // 1. Прибираємо команду зі списку
+    if (!window.confirm('Видалити цю команду?')) return;
     const updatedTeams = teams.filter(t => t.id !== teamId);
-    
-    // 2. Прибираємо її з "натискань" (щоб не висіла в списку buzzers)
     const updatedBuzzers = buzzers.filter(b => b.teamId !== teamId);
-
-    publishGameState({ 
-        ...gameState, 
-        teams: updatedTeams,
-        buzzers: updatedBuzzers
-    });
+    publishGameState({ ...gameState, teams: updatedTeams, buzzers: updatedBuzzers });
   };
-  
   const updateScore = (teamId, amount) => { 
       const updatedTeams = teams.map(team => team.id === teamId ? { ...team, score: team.score + amount } : team);
       publishGameState({ ...gameState, teams: updatedTeams }); 
   };
   
-  // --- Функції керування ПИТАННЯМИ ---
+  // Керування питаннями
   const handleAddQuestion = () => { if (newQuestionText.trim() === '') return; publishGameState({ ...gameState, questions: [...questions, { id: generateId('q-'), text: newQuestionText.trim() }] }); setNewQuestionText(''); };
   const handleRemoveQuestion = (qid) => { if (window.confirm('Видалити?')) publishGameState({ ...gameState, questions: questions.filter(q => q.id !== qid) }); };
   
@@ -146,6 +136,7 @@ function HostPage() {
   const handleClearUsed = () => { if(window.confirm('Очистити закреслення?')) publishGameState({...gameState, usedQuestionIds: []}); };
   const handleResetGame = () => { if (window.confirm('Скинути гру?')) { localStorage.removeItem('brainring_host_data'); window.location.reload(); } };
   
+  // --- ВИПРАВЛЕНИЙ ІМПОРТ/ЕКСПОРТ ---
   const handleExportQuestions = () => {
       if (!questions.length) return alert('Немає питань');
       const dataStr = JSON.stringify(questions, null, 2);
@@ -154,12 +145,42 @@ function HostPage() {
       link.download = 'questions.json';
       link.click();
   };
+  
+  // Функція кліку по прихованому інпуту
+  const triggerImport = () => {
+      if (fileInputRef.current) {
+          fileInputRef.current.click();
+      }
+  };
+
   const handleImportQuestions = (e) => {
-      const file = e.target.files[0]; if(!file) return;
+      const file = e.target.files[0]; 
+      if(!file) return;
+      
       const reader = new FileReader();
-      reader.onload = (ev) => { try { const q = JSON.parse(ev.target.result); if(Array.isArray(q)) publishGameState({...gameState, questions: q}); } catch(err){ alert('Помилка файлу'); } };
+      reader.onload = (ev) => { 
+          try { 
+              const q = JSON.parse(ev.target.result); 
+              if(Array.isArray(q)) {
+                  // Додаємо нові питання до існуючих або замінюємо (тут я замінюю для простоти, але можна об'єднати)
+                  if(window.confirm(`Знайдено ${q.length} питань. Додати їх до гри?`)) {
+                      // Тут ми об'єднуємо старі і нові, генеруючи нові ID для уникнення конфліктів
+                      const newQuestionsWithIds = q.map(item => ({
+                          id: item.id || generateId('q-'),
+                          text: item.text || item // Підтримка і об'єктів {text: "..."} і просто масиву строк
+                      }));
+                      publishGameState({...gameState, questions: [...questions, ...newQuestionsWithIds]});
+                      alert('Питання успішно додано!');
+                  }
+              } else {
+                  alert('Файл має містити масив (список) питань.');
+              }
+          } catch(err) { 
+              alert('Помилка: Невірний формат JSON файлу.'); 
+          } 
+      };
       reader.readAsText(file);
-      e.target.value = null;
+      e.target.value = null; // Скидаємо значення інпуту, щоб можна було вибрати той самий файл знову
   };
 
   if (!isConnected || !gameId) return <div>Завантаження...</div>;
@@ -170,18 +191,18 @@ function HostPage() {
         <Link to="/">&larr; На головну</Link>
         <div>
             <button onClick={() => setShowScanner(!showScanner)} style={{ marginRight: '10px' }}>{showScanner ? 'Закрити' : '📷 Підключити'}</button>
-            <button onClick={handleResetGame} style={{ backgroundColor: '#c16161ff', border: '1px solid red' }}>Скинути</button>
+            <button onClick={handleResetGame} style={{ backgroundColor: '#ffdddd', border: '1px solid red' }}>Скинути</button>
         </div>
       </nav>
       
       {showScanner && <div style={sectionStyle}><div id="host-qr-scanner" style={{ maxWidth: '300px', margin: 'auto' }}></div></div>}
 
       <h1>Сторінка Ведучого</h1>
-      <div style={{ padding: '10px' }}>ID: {gameId}</div>
+      <div style={{ padding: '10px', backgroundColor: '#dfffe2' }}>ID: {gameId}</div>
 
       <TimerControls gameState={gameState} publishGameState={publishGameState} />
 
-      <div style={{ padding: '10px', border: '2px solid blue', borderRadius: '8px', marginBottom: '20px', backgroundColor: '#242424' }}>
+      <div style={{ padding: '10px', border: '2px solid blue', borderRadius: '8px', marginBottom: '20px', backgroundColor: '#f0f8ff' }}>
           <h3>Вибране питання:</h3>
           {currentQuestionId ? (
               <p style={{ fontSize: '1.2em' }}>
@@ -193,18 +214,10 @@ function HostPage() {
 
       <div style={sectionStyle}>
         <h2>Команди</h2>
-        
         <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="text" 
-            placeholder="Назва нової команди" 
-            value={newTeamName} 
-            onChange={(e) => setNewTeamName(e.target.value)} 
-            style={{ padding: '5px', width: '200px' }}
-          />
+          <input type="text" placeholder="Назва нової команди" value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} style={{ padding: '5px', width: '200px' }} />
           <button onClick={handleCreateTeam} style={{ marginLeft: '10px' }}>Створити</button>
         </div>
-
         {teams.length === 0 ? <p>Немає команд.</p> : (
           <table style={{ width: '100%' }}>
             <thead><tr><th>Назва</th><th>Бали</th><th>Час</th><th>Дії</th></tr></thead>
@@ -222,8 +235,7 @@ function HostPage() {
                     <td>{buzzData ? buzzData.time.toFixed(2) : '-'}</td>
                     <td>
                         <button onClick={() => setShowQrForTeam(team)} style={{ marginRight: '5px' }}>QR</button>
-                        {/* Кнопка видалення */}
-                        <button onClick={() => handleDeleteTeam(team.id)} style={{ backgroundColor: '#fa6b6bff', color: 'red', border: '1px solid red' }}>X</button>
+                        <button onClick={() => handleDeleteTeam(team.id)} style={{ backgroundColor: '#ffdddd', color: 'red', border: '1px solid red' }}>X</button>
                     </td>
                   </tr>
                 );
@@ -238,9 +250,22 @@ function HostPage() {
         <div>
           <input type="text" value={newQuestionText} onChange={(e) => setNewQuestionText(e.target.value)} style={{ width: '60%' }} />
           <button onClick={handleAddQuestion}>Додати</button>
-          <button onClick={handleExportQuestions}>Експорт</button>
-          <button style={{ marginLeft: '5px'}}>Імпорт<input type="file" accept=".json" style={{display:'none'}} onChange={handleImportQuestions}/></button>
+          
+          <button onClick={handleExportQuestions} style={{ marginLeft: '10px' }}>Експорт</button>
+          
+          {/* --- НОВА КНОПКА ІМПОРТУ --- */}
+          <button onClick={triggerImport} style={{ marginLeft: '5px', backgroundColor: '#e6f7ff', border: '1px solid blue' }}>Імпорт</button>
+          
+          {/* ПРИХОВАНИЙ INPUT */}
+          <input 
+              type="file" 
+              accept=".json" 
+              style={{ display: 'none' }} 
+              ref={fileInputRef} // Прив'язуємо ref
+              onChange={handleImportQuestions} 
+          />
         </div>
+
         <ul style={{ maxHeight: '300px', overflowY: 'auto', marginTop: '10px', border: '1px solid #eee' }}>
           {questions.map((q, i) => {
             const isUsed = usedQuestionIds.includes(q.id);

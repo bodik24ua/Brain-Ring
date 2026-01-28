@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'; // Імпортуємо Link
 function HomePage() {
   return (
     <div>
-      <h1>Оберіть вашу роль</h1>
+      <h1>Brain Ring Game</h1>
 
       {/* Створюємо список посилань */}
       <nav>
