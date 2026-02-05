@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react'; 
 import { useGame } from '../context/GameContext'; 
 
@@ -21,6 +22,7 @@ function LiveTimer({ timerDuration, timerStartTime, timerRunning, hasBuzzed, buz
 }
 
 function ResultsPage() {
+  const { t } = useTranslation();
   const { gameState, isConnected, gameId, connectToGame, waitForInvitation } = useGame();
   const { teams, timerDuration, timerStartTime, timerRunning, buzzers, currentQuestionId, isQuestionActive, questions } = gameState;
   const [manualGameId, setManualGameId] = useState('');
@@ -41,20 +43,20 @@ function ResultsPage() {
 
   useEffect(() => { if (gameId) localStorage.setItem(RESULTS_STORAGE_KEY, JSON.stringify({ gameId })); }, [gameId]);
 
-  const handleDisconnect = () => { if(window.confirm('Відключитися?')) { localStorage.removeItem(RESULTS_STORAGE_KEY); window.location.reload(); } };
+  const handleDisconnect = () => { if(window.confirm(t('confirmDisconnect'))) { localStorage.removeItem(RESULTS_STORAGE_KEY); window.location.reload(); } };
   const handleConnect = () => { if (manualGameId.trim() === '') return; connectToGame(manualGameId.trim(), { host: false }); };
 
   if (!gameId) {
     return (
       <div style={{ textAlign: 'center', padding: '20px' }}>
-        <nav><Link to="/">&larr; На головну</Link></nav>
-        <h1>Екран Результатів</h1>
+        <nav><Link to="/">&larr; {t('toHomePage')}</Link></nav>
+        <h1>{t('resultsScreenTitle')}</h1>
         <div style={{ margin: '40px 0', padding: '20px', border: '2px dashed #ccc', borderRadius: '10px' }}>
-          <h3>Щоб підключити цей екран:</h3>
-          <p>Ведучий має відсканувати цей код:</p>
+          <h3>{t('toConnectThisScreen')}</h3>
+          <p>{t('hostMustScan')}</p>
           {setupInfo && (<div style={{ background: 'white', padding: '10px', display: 'inline-block' }}><QRCodeSVG value={JSON.stringify({ setupId: setupInfo.setupId })} size={256} /></div>)}
         </div>
-        <div><p>Або ID вручну:</p><input type="text" placeholder="game-xxxxxx" value={manualGameId} onChange={(e) => setManualGameId(e.target.value)} /><button onClick={handleConnect}>Підключитися</button></div>
+        <div><p>{t('orEnterIdManually')}</p><input type="text" placeholder="game-xxxxxx" value={manualGameId} onChange={(e) => setManualGameId(e.target.value)} /><button onClick={handleConnect}>{t('connectButton')}</button></div>
       </div>
     );
   }
@@ -83,23 +85,23 @@ function ResultsPage() {
   const speakerTeamId = buzzers.length > 0 ? buzzers[0].teamId : null;
   const currentQuestionText = questions.find(q => q.id === currentQuestionId)?.text;
 
-  if (!isConnected || !gameState) return <div>Підключення...</div>;
+  if (!isConnected || !gameState) return <div>{t('connecting')}</div>;
 
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}><Link to="/">&larr; На головну</Link><button onClick={handleDisconnect}>Відключитися</button></div>
-      <h1>Результати</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}><Link to="/">&larr; {t('toHomePage')}</Link><button onClick={handleDisconnect}>{t('disconnect')}</button></div>
+      <h1>{t('results')}</h1>
       
       <div style={{ margin: '20px auto', padding: '20px', maxWidth: '800px', border: '2px solid #333', borderRadius: '10px', backgroundColor: '#1a1a1a', fontSize: '1.5em', fontWeight: 'bold' }}>
-          {isQuestionActive && currentQuestionText ? <span>{currentQuestionText}</span> : <span style={{ color: '#000000ff' }}>Увага на екран...</span>}
+          {isQuestionActive && currentQuestionText ? <span>{currentQuestionText}</span> : <span style={{ color: '#000000ff' }}>{t('attentionToScreen')}</span>}
       </div>
 
       <LiveTimer timerDuration={timerDuration} timerStartTime={timerStartTime} timerRunning={timerRunning} hasBuzzed={false} buzzTime={0} />
       <hr />
       <table style={{ width: '100%', maxWidth: '900px', margin: 'auto', borderCollapse: 'collapse', fontSize: '1.4em' }}>
-        <thead><tr style={{ backgroundColor: '#242424' }}><th>Ранг</th><th>Команда</th><th>Бали</th><th>Час</th></tr></thead>
+        <thead><tr style={{ backgroundColor: '#242424' }}><th>{t('rank')}</th><th>{t('team')}</th><th>{t('score')}</th><th>{t('time')}</th></tr></thead>
         <tbody>
-          {displayTeams.length === 0 ? (<tr><td colSpan="4">Очікування...</td></tr>) : (
+          {displayTeams.length === 0 ? (<tr><td colSpan="4">{t('waiting')}</td></tr>) : (
             displayTeams.map((team) => {
               const buzzData = buzzers.find(b => b.teamId === team.id);
               const isSpeaker = team.id === speakerTeamId;
@@ -110,7 +112,7 @@ function ResultsPage() {
               return (
                 <tr key={team.id} style={{ backgroundColor: isSpeaker ? '#27754dff' : 'transparent', transition: 'background-color 0.3s' }}>
                   <td style={{ border: '1px solid #ccc' }}>{medal}</td>
-                  <td style={{ border: '1px solid #ccc', textAlign: 'left', padding: '10px' }}>{isSpeaker && <span style={{ marginRight: '10px' }}>🎤</span>} {team.name}</td>
+                  <td style={{ maxWidth: '30vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', border: '1px solid #ccc', textAlign: 'left', padding: '10px' }}>{isSpeaker && <span style={{ marginRight: '10px' }}>🎤</span>} {team.name}</td>
                   <td style={{ border: '1px solid #ccc', fontWeight: 'bold' }}>{team.score}</td>
                   <td style={{ border: '1px solid #ccc' }}>{buzzData ? buzzData.time.toFixed(2) : '-'}</td>
                 </tr>
