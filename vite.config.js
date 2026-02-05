@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
       react(),
       // basicSsl() 
     ],
-    base: command === 'preview' ? '/Brain-Ring/' : '/',
+    base: command === 'build' ? '/Brain-Ring/' : '/',
     server: {
       host: true,
       // https: true 
