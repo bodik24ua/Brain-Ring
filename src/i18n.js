@@ -17,7 +17,7 @@ i18n
     },
     backend: {
       // Path where translations will be stored
-      loadPath: `${import.meta.env.BASE_URL}locales/{{lng}}/{{ns}}.json`,
+      loadPath: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/locales/{{lng}}/{{ns}}.json`,
     },
   });
 
