@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Suspense fallback="Loading...">
       {/* Обгортаємо ВСЕ в GameProvider, щоб "мозок" був доступний скрізь */}
       <GameProvider>
-        <HashRouter basename={import.meta.env.BASE_URL}>
+        <HashRouter>
           <LanguageSwitcher />
           <Routes>
             <Route path="/" element={<HomePage />} />
