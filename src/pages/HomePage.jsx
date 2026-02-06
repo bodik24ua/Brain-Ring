@@ -10,18 +10,33 @@ function HomePage() {
 
       {/* Створюємо список посилань */}
       <nav>
-        <ul>
-          <li>
-            <button style={{ margin: '10px'}}><Link to="/host">{t('host')}</Link></button>
-          </li>
-          <li>
-            <button style={{ margin: '10px'}}><Link to="/player">{t('player')}</Link></button>
-          </li>
-          <li>
-            <button style={{ margin: '10px'}}><Link to="/results">{t('results')}</Link></button>
-          </li>
-        </ul>
-      </nav>
+      <ul style={{ listStyleType: 'none', padding: 0 }}> {/* Додав стиль, щоб прибрати крапки списку */}
+        <li>
+          <button 
+            style={{ margin: '10px'}} 
+            onClick={() => navigate('/host')} // 3. Використовуй onClick
+          >
+            {t('host')}
+          </button>
+        </li>
+        <li>
+          <button 
+            style={{ margin: '10px'}} 
+            onClick={() => navigate('/player')}
+          >
+            {t('player')}
+          </button>
+        </li>
+        <li>
+          <button 
+            style={{ margin: '10px'}} 
+            onClick={() => navigate('/results')}
+          >
+            {t('results')}
+          </button>
+        </li>
+      </ul>
+    </nav>
     </div>
   );
 }
