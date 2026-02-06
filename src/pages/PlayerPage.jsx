@@ -185,17 +185,19 @@ function PlayerPage() {
   // --- ВАЖЛИВО: Якщо команду видалили ---
   if (!myTeam) {
       return (
-        <div style={{ padding: '20px', textAlign: 'center', border: '4px solid red', borderRadius: '10px', margin: '20px', backgroundColor: '#fff0f0' }}>
+        <div style={{ padding: '20px', textAlign: 'center', border: '4px solid red', borderRadius: '10px', margin: '20px', backgroundColor: '#1d1d1d' }}>
             <h2 style={{ color: 'red' }}>{t('teamDeleted')}</h2>
             <p>{t('hostDeletedTeam')}</p>
+            <p>{t('ifWereHost')}</p>
+
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
-                <button 
+                {/* <button 
                     onClick={() => setScannedData({ ...scannedData, teamId: null })}
                     style={{ padding: '15px', fontSize: '1.1em' }}
                 >
                     {t('selectAnotherTeam')}
-                </button>
+                </button> */}
                 
                 <button 
                     onClick={handleExitGame} 
