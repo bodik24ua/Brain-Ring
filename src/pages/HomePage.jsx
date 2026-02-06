@@ -9,13 +9,13 @@ function HomePage() {
     <div>
       <h1>{t('welcome')}</h1>
 
-      {/* Створюємо список посилань */}
+      {/* список посилань */}
       <nav>
-      <ul style={{ listStyleType: 'none', padding: 0 }}> {/* Додав стиль, щоб прибрати крапки списку */}
+      <ul style={{ listStyleType: 'none', padding: 0 }}> 
         <li>
           <button 
             style={{ margin: '10px'}} 
-            onClick={() => navigate('/host')} // 3. Використовуй onClick
+            onClick={() => navigate('/host')}
           >
             {t('host')}
           </button>
