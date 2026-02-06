@@ -37,7 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Suspense fallback="Loading...">
       {/* Обгортаємо ВСЕ в GameProvider, щоб "мозок" був доступний скрізь */}
       <GameProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <HashRouter basename={import.meta.env.BASE_URL}>
           <LanguageSwitcher />
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -45,7 +45,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/player" element={<PlayerPage />} />
             <Route path="/results" element={<ResultsPage />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </GameProvider>
     </Suspense>
   </React.StrictMode>,
